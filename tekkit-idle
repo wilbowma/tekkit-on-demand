@@ -1,0 +1,13 @@
+#!/bin/sh
+source /etc/tekkit-on-demand/config.sh
+
+if [ ! -f $IDLE_LOCKFILE ]; then
+  touch $IDLE_LOCKFILE
+  if idle; then
+    sleep $WAIT_TIME;
+    if idle; then
+      stop
+    fi
+  fi
+  /bin/rm $IDLE_LOCKFILE
+fi
