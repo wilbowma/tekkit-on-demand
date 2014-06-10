@@ -1,14 +1,14 @@
 #!/bin/sh
 source /etc/tekkit-on-demand/config.sh
 
-if [ ! -f $LOCKFILE ]; then
-  touch $LOCKFILE
+if [ ! -f $START_LOCKFILE ]; then
+  touch $START_LOCKFILE
   if ! pgrep -U $SERVER_USER -f "$MINECRAFT_JAR" >/dev/null; then
-    sudo -u $SERVER_USER -- $LAUNCH
+    sudo -u $SERVER_USER -- screen -S $SESSION $LAUNCH
     echo -en "\xFF\x00\x16\x00"
     echo -n "$MESSAGE" | sed 's/./\\x0/g'
     echo -en "\xA7\x00\x30\x00\xA7\x00\x35"
   fi
-  /bin/rm $LOCKFILE
+  /bin/rm $START_LOCKFILE
 fi
 exec sudo -u $SERVER_USER nc $LOCAL_IP $LOCAL_PORT

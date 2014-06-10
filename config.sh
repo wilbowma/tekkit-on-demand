@@ -2,20 +2,23 @@
 
 ## Change these configuration variables. They should probably match server.properties
 ## Leave them blank if you think I'm a good guesser.
+SERVER_ROOT=
+SERVER_ROOT=${SERVER_ROOT:-/srv/tekkit}
+
 SERVER_PROPERTIES=
-SERVER_PROPERTIES=${SERVER_PROPERTIES:-/srv/tekkit/server.properties}
+SERVER_PROPERTIES=${SERVER_PROPERTIES:-$SERVER_ROOT/server.properties}
 
 LOCAL_PORT=
-LOCAL_PORT=${LOCAL_PORT:-(sed -n 's/^server-port=\([0-9]*\)$/\1/p' ${SERVER_PROPERTIES})}
+LOCAL_PORT=${LOCAL_PORT:-$(sed -n 's/^server-port=\([0-9]*\)$/\1/p' ${SERVER_PROPERTIES})}
 
 LOCAL_IP=
-LOCAL_IP=${LOCAL_IP:-(sed -n 's/^server-ip=\([0-9]*\)$/\1/p' ${SERVER_PROPERTIES})}
+LOCAL_IP=${LOCAL_IP:-$(sed -n 's/^server-ip=\([0-9]*\)$/\1/p' ${SERVER_PROPERTIES})}
 
 MINECRAFT_JAR=
-MINECRAFT_JAR=${MINECRAFT_PATH:-/srv/tekkit/Tekkit.jar}
+MINECRAFT_JAR=${MINECRAFT_PATH:-$SERVER_ROOT/Tekkit.jar}
 
 MINECRAFT_LOG=
-MINECRAFT_LOG=${MINECRAFT_PATH:-/srv/tekkit/server.log}
+MINECRAFT_LOG=${MINECRAFT_PATH:-$SERVER_ROOT/server.log}
 
 ## NB: This default may not be sensible
 JAVAOPTS=
@@ -46,7 +49,6 @@ IDLE_LOCKFILE=${START_LOCKFILE:-/tmp/idleingtekkit}
 PLAYERS_FILE=
 PLAYERS_FILE=${PLAYERS_FILE:-/tmp/tekkitplayers}
 
-
 ## You may not need to change this.
 
 ## Define this function to start the minecraft server. This should start
@@ -55,8 +57,8 @@ PLAYERS_FILE=${PLAYERS_FILE:-/tmp/tekkitplayers}
 ## This command will be run in a screen session to communicate with the
 ## server
 start() {
-  /usr/bin/java $JAVAOPTS -jar $JAVAOPTS nogui 2>&1\
-    | sed 's/\[INFO\].* There are \([0-9]*\)/[0-9]* players/\1/p' > $PLAYERS_FILE\
+  /usr/bin/java $JAVAOPTS -jar $MINECRAFT_JAR nogui 2>&1 \
+    | sed -e 's/There are \([0-9]*\)\/[0-9] players/\1/' -e 't M' -e 'b' -e ": M w $PLAYERS_FILE" -e 'd' \
     | grep -v -e "INFO" -e "Can't keep up"
 }
 
