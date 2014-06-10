@@ -5,12 +5,6 @@
 SERVER_PROPERTIES=
 SERVER_PROPERTIES=${SERVER_PROPERTIES:-/srv/tekkit/server.properties}
 
-QUERY_PORT=
-QUERY_PORT=${QUERY_PORT:-(sed -n 's/^query.port=\([0-9]*\)$/\1/p' ${SERVER_PROPERTIES})}
-
-PUBLIC_IP=
-PUBLIC_IP=${PUBLIC_IP:-`curl ifconfig.me`}
-
 LOCAL_PORT=
 LOCAL_PORT=${LOCAL_PORT:-(sed -n 's/^server-port=\([0-9]*\)$/\1/p' ${SERVER_PROPERTIES})}
 
