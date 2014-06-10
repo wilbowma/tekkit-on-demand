@@ -29,7 +29,7 @@ SESSION=
 SESSION=${SESSION:-Minecraft}
 
 MESSAGE=
-MESSAGE=${MESSAGE:-Wat}
+MESSAGE=${MESSAGE:-Just a moment please}
 
 WAIT_TIME=
 WAIT_TIME=${WAIT_TIME:-600}
@@ -58,7 +58,7 @@ PLAYERS_FILE=${PLAYERS_FILE:-/tmp/tekkitplayers}
 ## server
 start() {
   /usr/bin/java $JAVAOPTS -jar $MINECRAFT_JAR nogui 2>&1 \
-    | sed -e 's/There are \([0-9]*\)\/[0-9] players/\1/' -e 't M' -e 'b' -e ": M w $PLAYERS_FILE" -e 'd' \
+    | sed -e 's/^.*There are \([0-9]*\)\/[0-9] players.*$/\1/' -e 't M' -e 'b' -e ": M w $PLAYERS_FILE" -e 'd' \
     | grep -v -e "INFO" -e "Can't keep up"
 }
 
@@ -75,6 +75,7 @@ stop() {
 ## Define this function to return true if and only if the server has no
 ## players online. The server will shut down
 idle(){
+  echo -n "" > $PLAYERS_FILE
   screen -S $SESSION -p 0 -X stuff 'list\r'
-  [ "0" = `cat $PLAYERS_FILE` ]
+  [ "0" = `tail -n 1 $PLAYERS_FILE` ]
 }

@@ -10,5 +10,5 @@ service tekkit
   server = /usr/bin/tekkit-start
   port = 25565
   disable = no
-#	max_load = 20
+# max_load = 20
 }
