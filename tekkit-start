@@ -2,21 +2,23 @@
 source /etc/tekkit-on-demand/config.sh
 
 sign(){
-  # Kick package
+  # Kick protocol start
   echo -en "\xFF"
-  # Length
+  # Length in characters: (including protocol, MOTD, current, max players)
+  #               22
+  #               |
   echo -en "\x00\x22"
-  # UTF-16 String: Protocol header
+  # UTF-16BE String: Protocol header
   echo -en "\x00\xA7\x00\x31\x00\x00"
-  # Protocol version: 47
+  # Protocol version:
+  #                4       7
+  #                |       |
   echo -en "\x00\x34\x00\x37\x00\x00"
   # Minecraft version:
   #                1       .       6        .      4
   #                |               |               |
   echo -en "\x00\x31\x00\x2E\x00\x36\x00\x2E\x00\x34\x00\x00"
-  # MOTD: A Minecraft Server
-  #echo -n "A Minecraft Server" | sed 's/./\x00\x&'
-  # echo -en "\x00\x41\x00\x20\x00\x4D\x00\x69\x00\x6E\x00\x65\x00\x63\x00\x72\x00\x61\x00\x66\x00\x74\x00\x20\x00\x53\x00\x65\x00\x72\x00\x76\x00\x65\x00\x72\x00\x00"
+  # MOTD: "Up in just a sec.."
   echo -en "\x00\x55\x00\x70\x00\x20\x00\x69\x00\x6E\x00\x20\x00\x6A\x00\x75\x00\x73\x00\x74\x00\x20\x00\x61\x00\x20\x00\x73\x00\x65\x00\x63\x00\x2E\x00\x2E\x00\x00"
   # Current Players:
   #                0
@@ -26,9 +28,6 @@ sign(){
   #                0
   #                |
   echo -en "\x00\x30"
-  #    echo -en "\xFF\x00\x23\x00\xA7\x00"
-  #    echo -n "$MESSAGE" | sed 's/./\x0&/g'
-  #    echo -en "\xA7\x00\x30\x00\xA7\x00\x35"
 }
 
 if [ ! -f $START_LOCKFILE ]; then
