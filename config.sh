@@ -5,7 +5,7 @@
 SERVER_ROOT=
 SERVER_PROPERTIES=
 LOCAL_PORT=
-LOCAL_IP=
+LOCAL_IP=localhost
 MINECRAFT_JAR=
 MINECRAFT_LOG=
 SESSION=
@@ -30,15 +30,15 @@ SERVER_ROOT=${SERVER_ROOT:-/srv/tekkit}
 SERVER_PROPERTIES=${SERVER_PROPERTIES:-$SERVER_ROOT/server.properties}
 LOCAL_PORT=${LOCAL_PORT:-$(sed -n 's/^server-port=\([0-9]*\)$/\1/p' ${SERVER_PROPERTIES})}
 LOCAL_IP=${LOCAL_IP:-$(sed -n 's/^server-ip=\([0-9]*\)$/\1/p' ${SERVER_PROPERTIES})}
-MINECRAFT_JAR=${MINECRAFT_PATH:-$SERVER_ROOT/Tekkit.jar}
-MINECRAFT_LOG=${MINECRAFT_PATH:-$SERVER_ROOT/server.log}
+MINECRAFT_JAR=${MINECRAFT_JAR:-$SERVER_ROOT/Tekkit.jar}
+MINECRAFT_LOG=${MINECRAFT_LOG:-$SERVER_ROOT/server.log}
 SESSION=${SESSION:-Minecraft}
 MESSAGE=${MESSAGE:-Just a moment please}
 WAIT_TIME=${WAIT_TIME:-600}
 SERVER_USER=${SERVER_USER:-tekkit}
 LAUNCH=${LAUNCH:-/etc/tekkit-on-demand/launch.sh}
 START_LOCKFILE=${START_LOCKFILE:-/tmp/startingtekkit}
-IDLE_LOCKFILE=${START_LOCKFILE:-/tmp/idleingtekkit}
+IDLE_LOCKFILE=${IDLE_LOCKFILE:-/tmp/idleingtekkit}
 PLAYERS_FILE=${PLAYERS_FILE:-/tmp/tekkitplayers}
 
 ## Advanced configuration. You may not need to change this.
@@ -74,14 +74,16 @@ stop() {
 ## in a $WAIT_TIME.
 ## This command is run by your crontab.
 idle() {
+  echo -n "" > ${PLAYERS_FILE}
+  debug `cat ${PLAYERS_FILE}`
   screen -S $SESSION -p 0 -X stuff 'list\15'
-  while ! lsof | grep $PLAYERS_FILE; do
+  players=`tail -n 1 ${PLAYERS_FILE} | tr -d [:cntrl:]`
+  while [ -z ${players} ]; do
     sleep 1
+    players=`tail -n 1 ${PLAYERS_FILE} | tr -d [:cntrl:]`
   done
-  cat $PLAYERS_FILE | tr -d [:cntrl:] > $PLAYERS_FILE
-  players=`cat $PLAYERS_FILE`
-  debug "There are $players players"
-  if [ "0" = "$players" ]; then
+  debug "There are ${players} players"
+  if [ "0" = "${players}" ]; then
     debug "Idle"
     true
   else
