@@ -45,7 +45,6 @@ if [ ! -f $START_LOCKFILE ]; then
   else
     /bin/rm $START_LOCKFILE
     debug `[ -f $START_LOCKFILE ] && echo "Lockfile still exists"`
-    sign
     exec sudo -u $SERVER_USER nc $LOCAL_IP $LOCAL_PORT
   fi
 else
