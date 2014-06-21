@@ -55,6 +55,7 @@ debug() {
 ## server
 ## This command is run as $SERVER_USER
 start() {
+  # TODO: Or maybe some tekkit-start should be in here.
   /usr/bin/java $JAVAOPTS -jar $MINECRAFT_JAR nogui 2>&1 \
     | sed -n -e 's/^.*There are \([0-9]*\)\/[0-9] players.*$/\1/' -e 't M' -e 'b' -e ": M w $PLAYERS_FILE" -e 'd' \
     | grep -v -e "INFO" -e "Can't keep up"
@@ -74,6 +75,7 @@ stop() {
 ## in a $WAIT_TIME.
 ## This command is run by your crontab.
 idle() {
+  # TODO: Maybe some of this should be in tekkit-idle.
   echo -n "" > ${PLAYERS_FILE}
   debug `cat ${PLAYERS_FILE}`
   screen -S $SESSION -p 0 -X stuff 'list\15'
