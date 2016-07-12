@@ -1,5 +1,5 @@
 #!/bin/sh
-source /etc/tekkit-on-demand/config.sh
+. /etc/tekkit-on-demand/config.sh
 
 if [ ! -f $IDLE_LOCKFILE ]; then
   touch $IDLE_LOCKFILE
